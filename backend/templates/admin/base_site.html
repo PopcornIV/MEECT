@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'admin/custom.css' %}">
+{% endblock %}
+
+{% block branding %}
+  <div id="branding">
+    <a href="{% url 'admin:index' %}">
+      <img src="{% static 'admin/logo.jpg' %}" alt="MEECT Logo" class="admin-logo"/>
+    </a>
+    <div>
+      <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">MEECT CMS</a>
+      </h1>
+      <div id="site-description" style="color:#dce8dc;font-size:0.9rem;">
+        Mount Elgon Ecosystem Conservation Trust
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block footer %}
+  <div id="footer">
+    {% now "Y" as current_year %}
+    © {{ current_year }} MEECT — Built by Poplogic Creations
+  </div>
+{% endblock %}

@@ -1,0 +1,24 @@
+
+:root{
+  --meect-green: #2a7a3d;
+  --muted-grey: #6b6b6b;
+  --bg: #ffffff;
+  --card-bg: #bafcba;
+}
+
+body{
+  margin:0;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: var(--bg);
+  color: #222;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+a{ color: var(--meect-green); }
+
+h1,h2,h3,h4 { margin: 0.25rem 0; }
+p { line-height: 1.5; color: #333; }
+
+.app-root { display: flex; flex-direction: column; min-height: 100vh; }
+main { flex: 1; }

@@ -1,0 +1,300 @@
+/* ==========================================================
+   🌿 MEECT CMS Admin Theme – by Poplogic Creations
+   Clean, accessible, dual light/dark theme.
+   ========================================================== */
+
+/* 🎨 Brand Palette */
+:root {
+  --meect-green: #2a7a3d;
+  --meect-dark: #1e5c2e;
+  --meect-grey: #f5f7f5;
+  --meect-bg: #72c59a;
+  --meect-text: #1c1c1c;
+  --meect-link: #5c5c5c; /* gray link color */
+  --meect-lightgray: #f2f2f2;
+}
+
+/* ==========================================================
+   🩶 Global Layout
+   ========================================================== */
+body {
+  background-color: var(--meect-bg) !important;
+  color: var(--meect-text) !important;
+  font-family: "Inter", "Segoe UI", Roboto, sans-serif;
+}
+
+/* ==========================================================
+   🧭 Top Header
+   ========================================================== */
+#header {
+  background-color: var(--meect-green) !important;
+  border-bottom: 4px solid var(--meect-dark);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Header Title */
+#branding h1, #branding h1 a {
+  color: #ffffff !important;
+  font-size: 1.4rem;
+  letter-spacing: 0.4px;
+  font-weight: 600;
+}
+
+/* Header Links (View Site, Change Password, etc.) */
+#user-tools a,
+#user-tools a:visited {
+  color: #eaeaea !important;
+  font-weight: 500;
+}
+#user-tools a:hover {
+  color: #ffffff !important;
+  text-decoration: underline;
+}
+
+/* ==========================================================
+   📛 Logo Area
+   ========================================================== */
+#branding {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+#branding img.admin-logo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  border-radius: 6px;
+  background-color: #fff;
+  padding: 3px;
+}
+
+/* ==========================================================
+   🗂️ Module Boxes
+   ========================================================== */
+.module {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.module h2, .module caption {
+  background-color: var(--meect-green) !important;
+  color: var(--meect-lightgray) !important;
+  padding: 6px 10px;
+  font-weight: 600;
+}
+
+.module caption a,
+.module h2 a {
+  color: var(--meect-lightgray) !important;
+  font-weight: 600;
+}
+.module caption a:hover,
+.module h2 a:hover {
+  color: #ffffff !important;
+  text-decoration: underline;
+}
+
+/* ==========================================================
+   📄 Tables
+   ========================================================== */
+.change-list .results {
+  background: #ffffff;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.change-list .results th {
+  color: #030303 !important;
+}
+.change-list .results tr:nth-child(even) {
+  background-color: #030303 !important;
+}
+
+/* ==========================================================
+   ✨ Buttons
+   ========================================================== */
+.button,
+input[type=submit],
+.submit-row input {
+  background-color: var(--meect-green) !important;
+  border: none !important;
+  color: #f8f8f8 !important;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+.button:hover,
+input[type=submit]:hover {
+  background-color: var(--meect-dark) !important;
+}
+
+/* ==========================================================
+   🔗 Links
+   ========================================================== */
+a, a:link, a:visited {
+  color: var(--meect-link) !important;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+a:hover {
+  color: var(--meect-green) !important;
+}
+
+#content-main a.addlink,
+#content-main a.changelink {
+  color: var(--meect-green) !important;
+}
+#content-main a.addlink:hover,
+#content-main a.changelink:hover {
+  color: var(--meect-dark) !important;
+}
+
+/* ==========================================================
+   🧾 Side Menu + Filters
+   ========================================================== */
+#content-related {
+  background: #ffffff !important;
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================================
+   🪴 Footer
+   ========================================================== */
+#footer {
+  background: var(--meect-green);
+  color: #ffffff;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 0.85rem;
+  border-top: 3px solid var(--meect-dark);
+  position: relative;
+}
+#footer a {
+  color: #ffffff;
+}
+
+/* ==========================================================
+   🧍 List Hover Effect
+   ========================================================== */
+.row1:hover,
+.row2:hover {
+  background-color: rgba(42, 122, 61, 0.05) !important;
+}
+
+/* ==========================================================
+   🔐 Login Box
+   ========================================================== */
+#content-main .login {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================================
+   🌙 Dark Theme Adjustments
+   ========================================================== */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #111111 !important;
+    color: #dddddd !important;
+  }
+
+  #header {
+    background-color: var(--meect-dark) !important;
+  }
+
+  #user-tools a, #user-tools a:visited {
+    color: #ffffff !important;
+  }
+
+  .module {
+    background-color: #1b1b1b !important;
+  }
+
+  .module h2,
+  .module caption {
+    background-color: var(--meect-green) !important;
+    color: #dddddd !important;
+  }
+
+  .module caption a,
+  .module h2 a {
+    color: #dddddd !important;
+  }
+
+  .module caption a:hover,
+  .module h2 a:hover {
+    color: #ffffff !important;
+  }
+
+  #content-main a.addlink,
+  #content-main a.changelink {
+    color: var(--meect-green) !important;
+  }
+
+  #content-main a.addlink:hover,
+  #content-main a.changelink:hover {
+    color: #03642c !important;
+  }
+
+[data-theme="dark"] .change-list .results th,
+[data-theme="dark"] .change-list .results td {
+  color: #03642c !important;
+}
+
+[data-theme="dark"] .change-list .results th a,
+[data-theme="dark"] .change-list .results td a {
+  color: #03642c !important;
+}
+
+[data-theme="dark"] .change-list .results tr:hover td {
+  background-color: rgba(255,255,255,0.05) !important;
+}
+
+/* 🌗 THEME FIX — unify dark/light appearance */
+
+/* 🌞 Light Mode */
+[data-theme="light"] body {
+  background-color: var(--meect-grey) !important;
+  color: var(--meect-text) !important;
+}
+
+[data-theme="light"] #header {
+  background-color: var(--meect-green) !important;
+}
+
+[data-theme="light"] #content-main,
+[data-theme="light"] .dashboard-module,
+[data-theme="light"] .module caption,
+[data-theme="light"] .module h2,
+[data-theme="light"] .change-list,
+[data-theme="light"] .grp-module,
+[data-theme="light"] #content {
+  background-color: #f8faf8 !important;
+  color: #1a1a1a !important;
+  border-color: #d0d7d0 !important;
+}
+
+[data-theme="light"] .dashboard-module,
+[data-theme="light"] .module {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06) !important;
+  border-radius: 8px !important;
+}
+
+[data-theme="light"] a, 
+[data-theme="light"] a:link, 
+[data-theme="light"] a:visited {
+  color: var(--meect-green) !important;
+}
+[data-theme="light"] a:hover {
+  color: var(--meect-dark) !important;
+}
+
+
+
+  #footer {
+    background: var(--meect-dark) !important;
+  }
+}
+

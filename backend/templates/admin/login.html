@@ -1,0 +1,43 @@
+{% extends "admin/login.html" %}
+{% load static %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'admin/custom.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="content" class="login">
+  <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+    <img src="{% static 'admin/logo.jpg' %}" alt="MEECT Logo" style="width:56px;height:56px;object-fit:contain;border-radius:6px;">
+    <div>
+      <h1 style="margin:0; color: #2a7a3d;">MEECT Administration Panel</h1>
+      <strong><p style="margin:0; color:#666;">Sign in to manage content</p></strong>
+    </div>
+  </div>
+
+  <!-- {% if form.errors|length > 1 %}
+  <p class="errornote">Please correct the errors below.</p>
+{% else %}
+  <p class="errornote">Please correct the error below.</p>
+{% endif %} -->
+
+
+  <form action="" method="post" id="login-form">{% csrf_token %}
+    <div>
+      {{ form.username.errors }}
+      <label for="id_username" style="color:#666;">Username:</label><br>
+      {{ form.username }}
+    </div>
+    <div style="margin-top:10px;">
+      {{ form.password.errors }}
+      <label for="id_password" style="color:#666;">Password:</label><br>
+      {{ form.password }}
+    </div>
+
+    <div class="submit-row" style="margin-top:12px;">
+      <input type="submit" value="Log in" class="button">
+    </div>
+  </form>
+</div>
+{% endblock %}
