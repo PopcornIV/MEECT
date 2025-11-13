@@ -4,23 +4,18 @@ from rest_framework import status
 from django.core.mail import send_mail
 from django.conf import settings
 
-from .models import ContactMessage
-from .serializers import ContactMessageSerializer
-
+from contact.models import ContactMessage
+from contact.serializers import ContactMessageSerializer
 
 class ContactMessageViewSet(viewsets.ModelViewSet):
     queryset = ContactMessage.objects.all().order_by('-created_at')
     serializer_class = ContactMessageSerializer
 
     def create(self, request, *args, **kwargs):
-        """
-        Override create to send email notification when a new message is posted.
-        """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        contact_message = serializer.save()  # Saves to DB
+        contact_message = serializer.save()
 
-        # Send email to admin
         send_mail(
             subject=f"New Contact Message: {contact_message.subject}",
             message=f"""
