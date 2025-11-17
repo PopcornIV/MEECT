@@ -1,16 +1,25 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { FullScreenLoader, InlineLoader } from "../components/MEECTLoader";
 
 export default function Gallery() {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [imageLoaded, setImageLoaded] = useState({}); // Track loaded images
 
   useEffect(() => {
     axios
       .get("http://127.0.0.1:8000/api/gallery/") // matches your JSON endpoint
-      .then((res) => setEvents(res.data))
-      .catch((err) => console.error("❌ Error loading gallery:", err));
+      .then((res) => {
+        setEvents(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("❌ Error loading gallery:", err);
+        setLoading(false);
+      });
   }, []);
 
   const openModal = (event) => {
@@ -19,14 +28,18 @@ export default function Gallery() {
   };
 
   const closeModal = () => setSelectedEvent(null);
+
   const nextImage = () =>
     setCurrentIndex((prev) =>
       prev === selectedEvent.images.length - 1 ? 0 : prev + 1
     );
+
   const prevImage = () =>
     setCurrentIndex((prev) =>
       prev === 0 ? selectedEvent.images.length - 1 : prev - 1
     );
+
+  if (loading) return <FullScreenLoader visible={true} message="Loading Gallery…" />;
 
   return (
     <section style={{ padding: "2rem", background: "#fff", color: "#333" }}>
@@ -58,14 +71,11 @@ export default function Gallery() {
                 cursor: "pointer",
                 transition: "transform 0.2s ease",
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.transform = "scale(1.02)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
               onClick={() => openModal(event)}
             >
+              {!imageLoaded[event.id] && <InlineLoader />}
               <img
                 src={
                   event.images && event.images.length > 0
@@ -73,10 +83,12 @@ export default function Gallery() {
                     : "https://placehold.co/600x400?text=No+Image"
                 }
                 alt={event.name}
+                onLoad={() => setImageLoaded((prev) => ({ ...prev, [event.id]: true }))}
                 style={{
                   width: "100%",
                   height: "200px",
-                  objectFit: "cover"
+                  objectFit: "cover",
+                  display: imageLoaded[event.id] ? "block" : "none",
                 }}
               />
               <div
@@ -133,16 +145,22 @@ export default function Gallery() {
             ✕
           </button>
 
+          {!imageLoaded[`modal-${currentIndex}`] && <InlineLoader />}
           <img
             src={selectedEvent.images[currentIndex].image}
             alt={selectedEvent.name}
+            onLoad={() =>
+              setImageLoaded((prev) => ({ ...prev, [`modal-${currentIndex}`]: true }))
+            }
             style={{
               maxHeight: "80vh",
               maxWidth: "90%",
               borderRadius: "8px",
               objectFit: "contain",
+              display: imageLoaded[`modal-${currentIndex}`] ? "block" : "none",
             }}
           />
+
           <div
             style={{
               marginTop: "10px",

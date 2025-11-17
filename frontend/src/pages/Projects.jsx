@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/client";
 import { Link } from "react-router-dom";
+import { FullScreenLoader, InlineLoader } from "../components/MEECTLoader";
+import { FaArrowUp } from "react-icons/fa";
 
 export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [imageLoaded, setImageLoaded] = useState({});
+  const [showTop, setShowTop] = useState(false);
 
   useEffect(() => {
     api
@@ -17,10 +21,19 @@ export default function Projects() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p>Loading projects...</p>;
+  // Show "Back to Top" button on scroll
+  useEffect(() => {
+    const handleScroll = () => setShowTop(window.scrollY > 400);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+  if (loading) return <FullScreenLoader visible={true} message="Loading Projects…" />;
 
   return (
-    <div style={{ padding: "40px" }}>
+    <div style={{ padding: "40px", position: "relative" }}>
       <h1 style={{ color: "#2a7a3d", textAlign: "center" }}>Our Projects</h1>
 
       <div
@@ -46,6 +59,7 @@ export default function Projects() {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
+                cursor: "pointer",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-5px)";
@@ -63,16 +77,21 @@ export default function Projects() {
                     height: "auto",
                     overflow: "hidden",
                     backgroundColor: "#f5f5f5",
+                    position: "relative",
                   }}
                 >
+                  {!imageLoaded[project.id] && <InlineLoader />}
                   <img
                     src={project.image}
                     alt={project.title}
+                    onLoad={() =>
+                      setImageLoaded((prev) => ({ ...prev, [project.id]: true }))
+                    }
                     style={{
                       width: "100%",
                       height: "auto",
                       objectFit: "contain",
-                      display: "block",
+                      display: imageLoaded[project.id] ? "block" : "none",
                       borderBottom: "3px solid #2a7a3d",
                     }}
                   />
@@ -99,7 +118,6 @@ export default function Projects() {
                     : "No summary available."}
                 </p>
 
-                {/* Read More Button */}
                 <Link
                   to={`/projects/${project.id}`}
                   style={{
@@ -112,12 +130,8 @@ export default function Projects() {
                     textDecoration: "none",
                     transition: "background-color 0.2s ease",
                   }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#1e5c2e")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#2a7a3d")
-                  }
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#1e5c2e")}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#2a7a3d")}
                 >
                   Read More →
                 </Link>
@@ -126,6 +140,39 @@ export default function Projects() {
           ))
         )}
       </div>
+
+      {/* ⬆️ Back to Top Button */}
+      {showTop && (
+        <button
+          onClick={scrollToTop}
+          style={{
+            position: "fixed",
+            bottom: "30px",
+            right: "30px",
+            background: "#2a7a3d",
+            color: "#fff",
+            border: "none",
+            borderRadius: "50%",
+            width: "50px",
+            height: "50px",
+            cursor: "pointer",
+            fontSize: "20px",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+            transition: "transform 0.3s ease, background 0.3s ease",
+            zIndex: 1000,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "#1e5c2e";
+            e.currentTarget.style.transform = "translateY(-2px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "#2a7a3d";
+            e.currentTarget.style.transform = "translateY(0)";
+          }}
+        >
+          <FaArrowUp />
+        </button>
+      )}
     </div>
   );
 }

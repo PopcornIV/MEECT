@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaLeaf, FaUsers, FaSeedling, FaArrowUp } from "react-icons/fa";
 import api from "../api/client";
-import heroImage from "../assets/hero.jpg"; // ✅ Import hero image
+import heroImage from "../assets/hero.jpg"; // hero image
+import { FullScreenLoader, InlineLoader } from "../components/MEECTLoader";
 
 const Home = () => {
   const [featured, setFeatured] = useState({
@@ -11,10 +12,12 @@ const Home = () => {
     gallery: null,
     project: null,
   });
+  const [loading, setLoading] = useState(true);
   const [showTop, setShowTop] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const [pubRes, galRes, projRes] = await Promise.all([
           api.get("publications/"),
@@ -22,13 +25,18 @@ const Home = () => {
           api.get("projects/"),
         ]);
 
-        const publication = pubRes.data.find((p) => p.is_featured);
-        const gallery = galRes.data.find((g) => g.is_featured);
-        const project = projRes.data.find((p) => p.is_featured);
+        const publication =
+          pubRes.data.find((p) => p.is_featured) || pubRes.data[0] || null;
+        const gallery =
+          galRes.data.find((g) => g.is_featured) || galRes.data[0] || null;
+        const project =
+          projRes.data.find((p) => p.is_featured) || projRes.data[0] || null;
 
         setFeatured({ publication, gallery, project });
       } catch (error) {
         console.error("❌ Error fetching featured content:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -135,143 +143,125 @@ const Home = () => {
         </div>
       </section>
 
-{/* 📘 FEATURED CONTENT */}
-<section style={{ padding: "3rem 2rem" }}>
-  <h2 style={{ color: "#2a7a3d", textAlign: "center" }}>Featured Highlights</h2>
-  <p style={{ color: "#555", textAlign: "center", marginBottom: "2rem" }}>
-    Explore MEECT’s latest publications, galleries, and projects.
-  </p>
+      {/* 📘 FEATURED CONTENT */}
+      {loading && <FullScreenLoader visible={true} message="Fetching featured content…" />}
 
-  <div
-    style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-      gap: "20px",
-    }}
-  >
-    {/* Publication */}
-    {featured.publication ? (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        whileHover={{ scale: 1.03, boxShadow: "0 8px 20px rgba(0,0,0,0.15)" }}
-        style={{
-          background: "#fff",
-          borderRadius: "10px",
-          padding: "1rem",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-          cursor: "pointer",
-        }}
-      >
-        {featured.publication.preview_image ? (
-          <img
-            src={featured.publication.preview_image}
-            alt={featured.publication.title}
-            style={{ width: "100%", borderRadius: "8px" }}
-          />
-        ) : (
-          <div
-            style={{
-              width: "100%",
-              height: "180px",
-              borderRadius: "8px",
-              background: "#e0e0e0",
-            }}
-          />
-        )}
-        <h3 style={{ color: "#145a2b" }}>{featured.publication.title}</h3>
-        <p style={{ color: "#555" }}>
-          {featured.publication.description?.slice(0, 80) || "No description available"}...
+      <section style={{ padding: "3rem 2rem" }}>
+        <h2 style={{ color: "#2a7a3d", textAlign: "center" }}>Featured Highlights</h2>
+        <p style={{ color: "#555", textAlign: "center", marginBottom: "2rem" }}>
+          Explore MEECT’s latest publications, galleries, and projects.
         </p>
-        <Link to="/publications" style={{ color: "#2a7a3d", fontWeight: 600 }}>
-          Read More →
-        </Link>
-      </motion.div>
-    ) : null}
 
-    {/* Gallery */}
-    {featured.gallery ? (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-        whileHover={{ scale: 1.03, boxShadow: "0 8px 20px rgba(0,0,0,0.15)" }}
-        style={{
-          background: "#fff",
-          borderRadius: "10px",
-          padding: "1rem",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-          cursor: "pointer",
-        }}
-      >
-        {featured.gallery.images?.length > 0 ? (
-          <img
-            src={featured.gallery.images[0].image}
-            alt={featured.gallery.name}
-            style={{ width: "100%", borderRadius: "8px" }}
-          />
-        ) : (
-          <div
-            style={{
-              width: "100%",
-              height: "180px",
-              borderRadius: "8px",
-              background: "#e0e0e0",
-            }}
-          />
-        )}
-        <h3 style={{ color: "#145a2b" }}>{featured.gallery.name}</h3>
-        <p style={{ color: "#555" }}>A glimpse into our recent conservation efforts.</p>
-        <Link to="/gallery" style={{ color: "#2a7a3d", fontWeight: 600 }}>
-          View Gallery →
-        </Link>
-      </motion.div>
-    ) : null}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "20px",
+          }}
+        >
+          {/* Publication */}
+          {featured.publication ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              whileHover={{ scale: 1.03, boxShadow: "0 8px 20px rgba(0,0,0,0.15)" }}
+              style={{
+                background: "#fff",
+                borderRadius: "10px",
+                padding: "1rem",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                cursor: "pointer",
+              }}
+            >
+              {featured.publication.preview_image ? (
+                <InlineLoader visible={false} /> || (
+                  <img
+                    src={featured.publication.preview_image}
+                    alt={featured.publication.title}
+                    style={{ width: "100%", borderRadius: "8px" }}
+                  />
+                )
+              ) : (
+                <InlineLoader visible={true} />
+              )}
+              <h3 style={{ color: "#145a2b" }}>{featured.publication.title}</h3>
+              <p style={{ color: "#555" }}>
+                {featured.publication.description?.slice(0, 80) || "No description available"}...
+              </p>
+              <Link to="/publications" style={{ color: "#2a7a3d", fontWeight: 600 }}>
+                Read More →
+              </Link>
+            </motion.div>
+          ) : null}
 
-    {/* Project */}
-    {featured.project ? (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        whileHover={{ scale: 1.03, boxShadow: "0 8px 20px rgba(0,0,0,0.15)" }}
-        style={{
-          background: "#fff",
-          borderRadius: "10px",
-          padding: "1rem",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-          cursor: "pointer",
-        }}
-      >
-        {featured.project.cover_image ? (
-          <img
-            src={featured.project.cover_image}
-            alt={featured.project.title}
-            style={{ width: "100%", borderRadius: "8px" }}
-          />
-        ) : (
-          <div
-            style={{
-              width: "100%",
-              height: "180px",
-              borderRadius: "8px",
-              background: "#e0e0e0",
-            }}
-          />
-        )}
-        <h3 style={{ color: "#145a2b" }}>{featured.project.title}</h3>
-        <p style={{ color: "#555" }}>
-          {featured.project.description?.slice(0, 80) || "No description available"}...
-        </p>
-        <Link to="/projects" style={{ color: "#2a7a3d", fontWeight: 600 }}>
-          Explore →
-        </Link>
-      </motion.div>
-    ) : null}
-  </div>
-</section>
+          {/* Gallery */}
+          {featured.gallery ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              whileHover={{ scale: 1.03, boxShadow: "0 8px 20px rgba(0,0,0,0.15)" }}
+              style={{
+                background: "#fff",
+                borderRadius: "10px",
+                padding: "1rem",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                cursor: "pointer",
+              }}
+            >
+              {featured.gallery.images?.length > 0 ? (
+                <img
+                  src={featured.gallery.images[0].image}
+                  alt={featured.gallery.name}
+                  style={{ width: "100%", borderRadius: "8px" }}
+                />
+              ) : (
+                <InlineLoader visible={true} />
+              )}
+              <h3 style={{ color: "#145a2b" }}>{featured.gallery.name}</h3>
+              <p style={{ color: "#555" }}>A glimpse into our recent conservation efforts.</p>
+              <Link to="/gallery" style={{ color: "#2a7a3d", fontWeight: 600 }}>
+                View Gallery →
+              </Link>
+            </motion.div>
+          ) : null}
 
+          {/* Project */}
+          {featured.project ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              whileHover={{ scale: 1.03, boxShadow: "0 8px 20px rgba(0,0,0,0.15)" }}
+              style={{
+                background: "#fff",
+                borderRadius: "10px",
+                padding: "1rem",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                cursor: "pointer",
+              }}
+            >
+              {featured.project.image ? (
+                <img
+                  src={featured.project.image}
+                  alt={featured.project.title}
+                  style={{ width: "100%", borderRadius: "8px" }}
+                />
+              ) : (
+                <InlineLoader visible={true} />
+              )}
+              <h3 style={{ color: "#145a2b" }}>{featured.project.title}</h3>
+              <p style={{ color: "#555" }}>
+                {featured.project.summary?.slice(0, 80) || "No description available"}...
+              </p>
+              <Link to="/projects" style={{ color: "#2a7a3d", fontWeight: 600 }}>
+                Explore →
+              </Link>
+            </motion.div>
+          ) : null}
+        </div>
+      </section>
 
       {/* ⬆️ Back to Top Button */}
       {showTop && (

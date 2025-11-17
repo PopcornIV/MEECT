@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { FullScreenLoader } from "../components/MEECTLoader";
 
 export default function About() {
   const [showButton, setShowButton] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate data loading (team/partners could come from API)
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -11,12 +19,7 @@ export default function About() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   const team = [
     { name: "Mrs. Sarah Musundi", role: "Chairperson", image: "/team/chairperson.jpg" },
@@ -25,6 +28,15 @@ export default function About() {
     { name: "Mrs. Janephrice Talian", role: "Secretary", image: "/team/secretary.jpg" },
     { name: "Mr. Renson Makheti", role: "Audit Committee", image: "/team/Audit_Commitee.jpg" },
   ];
+
+  const partners = [
+    { src: "/partners/usfs.jpg", alt: "US Forest Service" },
+    { src: "/partners/foundation.png", alt: "Forest Service International Foundation" },
+    { src: "/partners/kfs.jpg", alt: "Kenya Forest Service" },
+    { src: "/partners/kws.jpg", alt: "Kenya Wildlife Service" },
+  ];
+
+  if (loading) return <FullScreenLoader visible={true} message="Loading About Page…" />;
 
   return (
     <div style={{ padding: "40px", position: "relative" }}>
@@ -197,12 +209,7 @@ export default function About() {
             margin: "0 auto",
           }}
         >
-          {[
-            { src: "/partners/usfs.jpg", alt: "US Forest Service" },
-            { src: "/partners/foundation.png", alt: "Forest Service International Foundation" },
-            { src: "/partners/kfs.jpg", alt: "Kenya Forest Service" },
-            { src: "/partners/kws.jpg", alt: "Kenya Wildlife Service" },
-          ].map((partner, i) => (
+          {partners.map((partner, i) => (
             <img
               key={i}
               src={partner.src}

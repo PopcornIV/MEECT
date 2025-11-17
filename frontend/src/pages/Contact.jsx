@@ -2,11 +2,28 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Heart, Handshake, Leaf, ArrowUp } from "lucide-react";
+import { FullScreenLoader, ButtonLoader } from "../components/MEECTLoader";
+
+const inputStyle = {
+  width: "100%",
+  padding: 8,
+  margin: "6px 0 10px",
+  borderRadius: 5,
+  border: "1px solid #ccc",
+};
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
   const [status, setStatus] = useState("");
   const [showScroll, setShowScroll] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+
+  // Page loading simulation
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Show "Back to Top" button when scrolled
   useEffect(() => {
@@ -27,6 +44,7 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSending(true);
     setStatus("Sending...");
     try {
       await axios.post("http://127.0.0.1:8000/api/contact/", formData);
@@ -35,10 +53,14 @@ export default function Contact() {
     } catch (error) {
       console.error(error);
       setStatus("❌ Failed to send. Please try again.");
+    } finally {
+      setSending(false);
     }
   };
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+  if (loading) return <FullScreenLoader visible={true} message="Loading Contact Page…" />;
 
   return (
     <section style={{ padding: "2rem", maxWidth: 1000, margin: "0 auto" }}>
@@ -48,7 +70,15 @@ export default function Contact() {
       </p>
 
       {/* Involvement Cards */}
-      <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", justifyContent: "center", marginTop: "2rem" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: "20px",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          marginTop: "2rem",
+        }}
+      >
         {[
           { icon: <Heart size={36} color="#2a7a3d" />, title: "Volunteer", text: "Join us in tree planting, awareness, and restoration efforts." },
           { icon: <Handshake size={36} color="#2a7a3d" />, title: "Partner", text: "Collaborate with MEECT on sustainable conservation projects." },
@@ -60,7 +90,14 @@ export default function Contact() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: i * 0.2 }}
-            style={{ flex: "1 1 280px", background: "#fff", borderRadius: 10, padding: "1.5rem", textAlign: "center", boxShadow: "0 3px 10px rgba(0,0,0,0.1)" }}
+            style={{
+              flex: "1 1 280px",
+              background: "#fff",
+              borderRadius: 10,
+              padding: "1.5rem",
+              textAlign: "center",
+              boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
+            }}
           >
             <div>{card.icon}</div>
             <h3 style={{ color: "#145a2b", marginTop: 10 }}>{card.title}</h3>
@@ -75,35 +112,86 @@ export default function Contact() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        style={{ background: "#fff", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", borderRadius: 10, padding: "2rem", marginTop: "3rem", maxWidth: 500, marginInline: "auto" }}
+        style={{
+          background: "#fff",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          borderRadius: 10,
+          padding: "2rem",
+          marginTop: "3rem",
+          maxWidth: 500,
+          marginInline: "auto",
+        }}
       >
         <label>Name</label>
-        <input name="name" value={formData.name} onChange={handleChange} required style={{ width: "100%", padding: 8, margin: "6px 0 10px", borderRadius: 5, border: "1px solid #ccc" }} />
+        <input name="name" value={formData.name} onChange={handleChange} required style={inputStyle} />
 
         <label>Email</label>
-        <input type="email" name="email" value={formData.email} onChange={handleChange} required style={{ width: "100%", padding: 8, margin: "6px 0 10px", borderRadius: 5, border: "1px solid #ccc" }} />
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+          title="Please enter a valid email address"
+          style={inputStyle}
+        />
 
         <label>Subject</label>
-        <input name="subject" value={formData.subject} onChange={handleChange} required style={{ width: "100%", padding: 8, margin: "6px 0 10px", borderRadius: 5, border: "1px solid #ccc" }} />
+        <input name="subject" value={formData.subject} onChange={handleChange} required style={inputStyle} />
 
         <label>Message</label>
-        <textarea name="message" value={formData.message} onChange={handleChange} rows="4" required style={{ width: "100%", padding: 8, margin: "6px 0 10px", borderRadius: 5, border: "1px solid #ccc" }} />
+        <textarea name="message" value={formData.message} onChange={handleChange} rows="4" required style={inputStyle} />
 
+        {/* Send Button with Loader */}
         <button
           type="submit"
-          style={{ background: "#044112ff", color: "#fff", padding: "0.6rem 1.2rem", border: "none", borderRadius: 6, cursor: "pointer", width: "100%", transition: "background 0.3s ease" }}
-          onMouseEnter={(e) => (e.target.style.background = "#2a7a3d")}
-          onMouseLeave={(e) => (e.target.style.background = "#044112ff")}
+          disabled={sending}
+          style={{
+            marginTop: 12,
+            backgroundColor: "#2a7a3d",
+            color: "#fff",
+            padding: "10px 16px",
+            border: "none",
+            borderRadius: 6,
+            cursor: sending ? "not-allowed" : "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+          }}
         >
-          Send Message
+          {sending ? <ButtonLoader visible={true} size={18} /> : "Send Message"}
         </button>
 
-        {status && <p style={{ marginTop: 10, color: status.startsWith("✅") ? "green" : "red", textAlign: "center" }}>{status}</p>}
+        {status && (
+          <p style={{ marginTop: 10, color: status.startsWith("✅") ? "green" : "red", textAlign: "center" }}>
+            {status}
+          </p>
+        )}
       </motion.form>
 
       {/* 🡅 Back to Top Button */}
       {showScroll && (
-        <motion.button onClick={scrollToTop} whileHover={{ scale: 1.1 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "fixed", bottom: 30, right: 30, background: "#2a7a3d", color: "#fff", border: "none", borderRadius: "50%", width: 50, height: 50, cursor: "pointer", boxShadow: "0 4px 10px rgba(0,0,0,0.2)" }}>
+        <motion.button
+          onClick={scrollToTop}
+          whileHover={{ scale: 1.1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          style={{
+            position: "fixed",
+            bottom: 30,
+            right: 30,
+            background: "#2a7a3d",
+            color: "#fff",
+            border: "none",
+            borderRadius: "50%",
+            width: 50,
+            height: 50,
+            cursor: "pointer",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+          }}
+        >
           <ArrowUp size={24} />
         </motion.button>
       )}
