@@ -67,6 +67,10 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
+CORS_ALLOW_ALL_METHODS = True
+CORS_ALLOW_CREDENTIALS = True
+
+
 ROOT_URLCONF = 'meect_backend.urls'
 
 TEMPLATES = [
@@ -169,3 +173,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Admin email
 DEFAULT_FROM_EMAIL = 'noreply@yourdomain.com'
 ADMIN_EMAIL = 'admin@yourdomain.com'  # Replace with your actual admin email
+
+# URL for "View Site" in Django Admin
+SITE_URL = "http://localhost:5173"
+

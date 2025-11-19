@@ -21,7 +21,14 @@ from django.template.response import TemplateResponse
 from projects.models import Project
 from resources.models import Publication, GalleryItem
 from contact.models import ContactMessage
+from django.conf import settings
 
+admin.site.site_header = "MEECT Admin"
+admin.site.site_title = "MEECT CMS"
+admin.site.index_title = "Content Management"
+
+# Set “View Site” button link
+admin.site.site_url = settings.SITE_URL
 
 # Custom admin index override
 def custom_admin_dashboard(request):
