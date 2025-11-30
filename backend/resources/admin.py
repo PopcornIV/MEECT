@@ -15,16 +15,17 @@ import os
 # ---------------------- #
 @admin.register(Publication)
 class PublicationAdmin(admin.ModelAdmin):
-    list_display = ('title', 'uploaded_at', 'file_link')
-    search_fields = ('title',)
-    list_filter = ('uploaded_at',)
+    list_display = ("title", "uploaded_at", "file_link")
 
     def file_link(self, obj):
         if obj.file:
-            return format_html('<a href="{}" target="_blank">View File</a>', obj.file.url)
+            url = reverse("view_publication", args=[obj.id])
+            return format_html(
+                '<a href="{}" target="_blank" style="color:white; background:#2a7a3d; padding:4px 8px; border-radius:4px; text-decoration:none;">View</a>',
+                url
+            )
         return "-"
-    file_link.short_description = "Preview"
-
+    file_link.short_description = "PDF"
 
 # ----------------------------- #
 # 📦 Gallery Bulk Upload Form   #

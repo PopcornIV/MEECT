@@ -22,6 +22,7 @@ from projects.models import Project
 from resources.models import Publication, GalleryItem
 from contact.models import ContactMessage
 from django.conf import settings
+from resources.views import view_publication
 
 admin.site.site_header = "MEECT Admin"
 admin.site.site_title = "MEECT CMS"
@@ -49,8 +50,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include("api.urls")),
+    path('api/', include('resources.api_urls')),  # your DRF API
+    path('publications/view/<int:pk>/', view_publication, name='view_publication'),
 ]
-
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

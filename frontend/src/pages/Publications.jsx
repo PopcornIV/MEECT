@@ -101,7 +101,7 @@ export default function Publications() {
                 </p>
                 {pub.file && (
                   <a
-                    href={pub.file}
+                    href={pub.file ? `http://127.0.0.1:8000/publications/view/${pub.id}/` : "#"}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
