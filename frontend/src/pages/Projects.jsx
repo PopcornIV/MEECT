@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "../api/client";
+import { getProjects } from "../api/client"; // ✅ named import only
 import { Link } from "react-router-dom";
 import { FullScreenLoader, InlineLoader } from "../components/MEECTLoader";
 import { FaArrowUp } from "react-icons/fa";
@@ -11,14 +11,19 @@ export default function Projects() {
   const [showTop, setShowTop] = useState(false);
 
   useEffect(() => {
-    api
-      .get("projects/")
-      .then((res) => {
+    const fetchProjects = async () => {
+      try {
+        const res = await getProjects(); // ✅ use named function
         console.log("✅ API Response:", res.data);
         setProjects(res.data);
-      })
-      .catch((err) => console.error("❌ Error loading projects:", err))
-      .finally(() => setLoading(false));
+      } catch (err) {
+        console.error("❌ Error loading projects:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
   }, []);
 
   // Show "Back to Top" button on scroll

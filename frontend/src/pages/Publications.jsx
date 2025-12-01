@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "../api/client";
+import { getResources } from "../api/client"; // ✅ use the proper named export
 import { FaArrowUp } from "react-icons/fa";
 
 export default function Publications() {
@@ -8,11 +8,18 @@ export default function Publications() {
   const [showTop, setShowTop] = useState(false);
 
   useEffect(() => {
-    api
-      .get("publications/")
-      .then((res) => setPublications(res.data))
-      .catch((err) => console.error("❌ Error loading publications:", err))
-      .finally(() => setLoading(false));
+    const fetchPublications = async () => {
+      try {
+        const res = await getResources("publications"); // ✅ call named function
+        setPublications(res.data);
+      } catch (err) {
+        console.error("❌ Error loading publications:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPublications();
   }, []);
 
   // Show "Back to Top" button on scroll
@@ -69,7 +76,6 @@ export default function Publications() {
                 e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,0.1)";
               }}
             >
-              {/* PDF Preview */}
               {pub.preview_image ? (
                 <img
                   src={pub.preview_image}
@@ -93,7 +99,6 @@ export default function Publications() {
                 </div>
               )}
 
-              {/* Info Section */}
               <div style={{ padding: "16px" }}>
                 <h3 style={{ color: "#2a7a3d" }}>{pub.title}</h3>
                 <p style={{ color: "#555", lineHeight: "1.6" }}>
@@ -101,7 +106,7 @@ export default function Publications() {
                 </p>
                 {pub.file && (
                   <a
-                    href={pub.file ? `http://127.0.0.1:8000/publications/view/${pub.id}/` : "#"}
+                    href={`http://127.0.0.1:8000/publications/view/${pub.id}/`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
@@ -126,7 +131,6 @@ export default function Publications() {
         )}
       </div>
 
-      {/* ⬆️ Back to Top Button */}
       {showTop && (
         <button
           onClick={scrollToTop}

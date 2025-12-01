@@ -5,6 +5,7 @@ from pdf2image import convert_from_path, convert_from_bytes
 from PIL import Image
 import os
 import io
+
 class Publication(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
