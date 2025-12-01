@@ -22,10 +22,10 @@ export default function About() {
 
   const team = [
     { name: "Mrs. Sarah Musundi", role: "Chairperson", image: "/team/chairperson.jpg" },
-    { name: "Mr. Enoch Kanyanya", role: "Chief Executive Officer", image: "/team/CEO.jpg" },
+    { name: "Mr. Enoch Kanyanya", role: "Chief Executive Officer", image: "/team/ceo.jpg" },
     { name: "Mr. Aggrey Chemonges", role: "Finance", image: "/team/finance.jpg" },
     { name: "Mrs. Janephrice Talian", role: "Secretary", image: "/team/secretary.jpg" },
-    { name: "Mr. Renson Makheti", role: "Audit Committee", image: "/team/Audit_Commitee.jpg" },
+    { name: "Mr. Renson Makheti", role: "Audit Committee", image: "/team/audit_commitee.jpg" },
   ];
 
   const partners = [
