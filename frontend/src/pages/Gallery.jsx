@@ -9,9 +9,12 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState({}); // Track loaded images
 
+  // ✅ Use backend URL from environment variables
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/gallery/") // matches your JSON endpoint
+      .get(`${BACKEND_URL}/api/gallery/`) // ✅ updated endpoint
       .then((res) => {
         setEvents(res.data);
         setLoading(false);
@@ -79,7 +82,7 @@ export default function Gallery() {
               <img
                 src={
                   event.images && event.images.length > 0
-                    ? event.images[0].image
+                    ? `${BACKEND_URL}${event.images[0].image}` // ✅ prepend backend URL
                     : "https://placehold.co/600x400?text=No+Image"
                 }
                 alt={event.name}
@@ -147,7 +150,7 @@ export default function Gallery() {
 
           {!imageLoaded[`modal-${currentIndex}`] && <InlineLoader />}
           <img
-            src={selectedEvent.images[currentIndex].image}
+            src={`${BACKEND_URL}${selectedEvent.images[currentIndex].image}`} // ✅ prepend backend URL
             alt={selectedEvent.name}
             onLoad={() =>
               setImageLoaded((prev) => ({ ...prev, [`modal-${currentIndex}`]: true }))

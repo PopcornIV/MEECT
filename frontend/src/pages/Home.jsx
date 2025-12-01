@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaLeaf, FaUsers, FaSeedling, FaArrowUp } from "react-icons/fa";
-import { getProjects, getResources } from "../api/client"; // ✅ fixed import
-import heroImage from "../assets/hero.jpg"; // hero image
+import { axiosInstance, BACKEND_URL } from "../api/client"; // BACKEND_URL added
+import heroImage from "../assets/hero.jpg";
 import { FullScreenLoader, InlineLoader } from "../components/MEECTLoader";
 
 const Home = () => {
@@ -16,14 +16,13 @@ const Home = () => {
   const [showTop, setShowTop] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchFeatured = async () => {
       setLoading(true);
       try {
-        // ✅ Use named exports instead of api.get
         const [pubRes, galRes, projRes] = await Promise.all([
-          getResources("/publications/"), // or create getPublications() in client.js
-          getResources("/gallery/"),      // or create getGallery()
-          getProjects("/projects/"),
+          axiosInstance.get("/publications/"),
+          axiosInstance.get("/gallery/"),
+          axiosInstance.get("/projects/"),
         ]);
 
         const publication =
@@ -41,7 +40,7 @@ const Home = () => {
       }
     };
 
-    fetchData();
+    fetchFeatured();
 
     const handleScroll = () => setShowTop(window.scrollY > 400);
     window.addEventListener("scroll", handleScroll);
@@ -52,7 +51,7 @@ const Home = () => {
 
   return (
     <div>
-      {/* 🌿 HERO SECTION */}
+      {/* HERO SECTION */}
       <section
         style={{
           background: `url(${heroImage}) center/cover no-repeat`,
@@ -62,13 +61,7 @@ const Home = () => {
           position: "relative",
         }}
       >
-        <div
-          style={{
-            background: "rgba(0,0,0,0.45)",
-            padding: "3rem",
-            borderRadius: "12px",
-          }}
-        >
+        <div style={{ background: "rgba(0,0,0,0.45)", padding: "3rem", borderRadius: "12px" }}>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -86,10 +79,7 @@ const Home = () => {
             MEECT supports community-driven conservation, capacity building, and sustainable
             livelihoods across the Mount Elgon landscape.
           </motion.p>
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
+          <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 300 }}>
             <Link
               to="/contact"
               style={{
@@ -109,7 +99,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 🌱 MISSION & VISION */}
+      {/* MISSION & VISION */}
       <section style={{ padding: "3rem 2rem", background: "#f9fdf9" }}>
         <h2 style={{ color: "#145a2b", textAlign: "center", marginBottom: "2rem" }}>
           Our Vision & Mission
@@ -124,21 +114,9 @@ const Home = () => {
           }}
         >
           {[
-            {
-              icon: <FaLeaf />,
-              title: "Vision",
-              text: "A thriving Mount Elgon ecosystem supporting communities and nature.",
-            },
-            {
-              icon: <FaUsers />,
-              title: "Mission",
-              text: "Empowering CFAs and communities to lead sustainable forest conservation.",
-            },
-            {
-              icon: <FaSeedling />,
-              title: "Goal",
-              text: "Promote restoration, livelihood resilience, and ecosystem balance.",
-            },
+            { icon: <FaLeaf />, title: "Vision", text: "A thriving Mount Elgon ecosystem supporting communities and nature." },
+            { icon: <FaUsers />, title: "Mission", text: "Empowering CFAs and communities to lead sustainable forest conservation." },
+            { icon: <FaSeedling />, title: "Goal", text: "Promote restoration, livelihood resilience, and ecosystem balance." },
           ].map((card, i) => (
             <motion.div
               key={i}
@@ -165,12 +143,127 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 📘 FEATURED CONTENT */}
+      {/* FEATURED CONTENT */}
       {loading && <FullScreenLoader visible={true} message="Fetching featured content…" />}
 
-      {/* ...rest of your featured content section stays the same... */}
+      {!loading && (
+        <section style={{ padding: "3rem 2rem" }}>
+          <h2 style={{ color: "#2a7a3d", textAlign: "center" }}>Featured Highlights</h2>
+          <p style={{ color: "#555", textAlign: "center", marginBottom: "2rem" }}>
+            Explore MEECT’s latest publications, galleries, and projects.
+          </p>
 
-      {/* ⬆️ Back to Top Button */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+              gap: "20px",
+            }}
+          >
+            {/* Featured Publication */}
+            {featured.publication && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                whileHover={{ scale: 1.03, boxShadow: "0 8px 20px rgba(0,0,0,0.15)" }}
+                style={{
+                  background: "#fff",
+                  borderRadius: "10px",
+                  padding: "1rem",
+                  boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                  cursor: "pointer",
+                }}
+              >
+                {featured.publication.preview_image ? (
+                  <img
+                    src={`${BACKEND_URL}${featured.publication.preview_image}`}
+                    alt={featured.publication.title}
+                    style={{ width: "100%", borderRadius: "8px" }}
+                  />
+                ) : (
+                  <InlineLoader visible={true} message="Loading preview…" />
+                )}
+                <h3 style={{ color: "#145a2b" }}>{featured.publication.title}</h3>
+                <p style={{ color: "#555" }}>
+                  {featured.publication.description?.slice(0, 80) || "No description available"}...
+                </p>
+                <Link to="/publications" style={{ color: "#2a7a3d", fontWeight: 600 }}>
+                  Read More →
+                </Link>
+              </motion.div>
+            )}
+
+            {/* Featured Gallery */}
+            {featured.gallery && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                whileHover={{ scale: 1.03, boxShadow: "0 8px 20px rgba(0,0,0,0.15)" }}
+                style={{
+                  background: "#fff",
+                  borderRadius: "10px",
+                  padding: "1rem",
+                  boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                  cursor: "pointer",
+                }}
+              >
+                {featured.gallery.images?.length > 0 ? (
+                  <img
+                    src={`${BACKEND_URL}${featured.gallery.images[0].image}`}
+                    alt={featured.gallery.name}
+                    style={{ width: "100%", borderRadius: "8px" }}
+                  />
+                ) : (
+                  <InlineLoader visible={true} message="Loading images…" />
+                )}
+                <h3 style={{ color: "#145a2b" }}>{featured.gallery.name}</h3>
+                <p style={{ color: "#555" }}>A glimpse into our recent conservation efforts.</p>
+                <Link to="/gallery" style={{ color: "#2a7a3d", fontWeight: 600 }}>
+                  View Gallery →
+                </Link>
+              </motion.div>
+            )}
+
+            {/* Featured Project */}
+            {featured.project && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                whileHover={{ scale: 1.03, boxShadow: "0 8px 20px rgba(0,0,0,0.15)" }}
+                style={{
+                  background: "#fff",
+                  borderRadius: "10px",
+                  padding: "1rem",
+                  boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                  cursor: "pointer",
+                }}
+              >
+                {featured.project.image ? (
+                  <img
+                    src={`${BACKEND_URL}${featured.project.image}`}
+                    alt={featured.project.title}
+                    style={{ width: "100%", borderRadius: "8px" }}
+                  />
+                ) : (
+                  <InlineLoader visible={true} message="Loading project…" />
+                )}
+                <h3 style={{ color: "#145a2b" }}>{featured.project.title}</h3>
+                <p style={{ color: "#555" }}>
+                  {featured.project.summary?.slice(0, 80) || "No description available"}...
+                </p>
+                <Link to="/projects" style={{ color: "#2a7a3d", fontWeight: 600 }}>
+                  Explore →
+                </Link>
+              </motion.div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Back to Top */}
       {showTop && (
         <motion.button
           onClick={scrollToTop}

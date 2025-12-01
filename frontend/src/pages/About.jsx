@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { FullScreenLoader } from "../components/MEECTLoader";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || ""; // fallback to empty string
+
 export default function About() {
   const [showButton, setShowButton] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate data loading (team/partners could come from API)
     const timer = setTimeout(() => setLoading(false), 800);
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setShowButton(window.scrollY > 250);
-    };
+    const handleScroll = () => setShowButton(window.scrollY > 250);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -127,15 +126,7 @@ export default function About() {
         </ol>
       </section>
 
-      {/* 🪶 Divider before Team */}
-      <hr
-        style={{
-          border: "none",
-          borderTop: "2px solid #e0e0e0",
-          width: "80%",
-          margin: "40px auto",
-        }}
-      />
+      <hr style={{ border: "none", borderTop: "2px solid #e0e0e0", width: "80%", margin: "40px auto" }} />
 
       {/* 👥 Team / Trustees */}
       <section style={{ marginBottom: "50px" }}>
@@ -169,8 +160,9 @@ export default function About() {
               }}
             >
               <img
-                src={member.image}
+                src={`${BACKEND_URL}${member.image}`}
                 alt={member.name}
+                loading="lazy"
                 style={{
                   width: "120px",
                   height: "120px",
@@ -212,8 +204,9 @@ export default function About() {
           {partners.map((partner, i) => (
             <img
               key={i}
-              src={partner.src}
+              src={`${BACKEND_URL}${partner.src}`}
               alt={partner.alt}
+              loading="lazy"
               style={{
                 width: "130px",
                 objectFit: "contain",

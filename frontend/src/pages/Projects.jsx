@@ -10,6 +10,9 @@ export default function Projects() {
   const [imageLoaded, setImageLoaded] = useState({});
   const [showTop, setShowTop] = useState(false);
 
+  // ✅ Get backend URL from environment variable
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -87,7 +90,7 @@ export default function Projects() {
                 >
                   {!imageLoaded[project.id] && <InlineLoader />}
                   <img
-                    src={project.image}
+                    src={`${BACKEND_URL}${project.image}`} // ✅ prepend backend URL
                     alt={project.title}
                     onLoad={() =>
                       setImageLoaded((prev) => ({ ...prev, [project.id]: true }))

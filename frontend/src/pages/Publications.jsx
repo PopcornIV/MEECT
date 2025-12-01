@@ -7,6 +7,9 @@ export default function Publications() {
   const [loading, setLoading] = useState(true);
   const [showTop, setShowTop] = useState(false);
 
+  // ✅ Get backend URL from environment variable
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
     const fetchPublications = async () => {
       try {
@@ -78,7 +81,7 @@ export default function Publications() {
             >
               {pub.preview_image ? (
                 <img
-                  src={pub.preview_image}
+                  src={`${BACKEND_URL}${pub.preview_image}`} // ✅ prepend backend URL
                   alt={pub.title}
                   style={{ width: "100%", height: "220px", objectFit: "cover" }}
                 />
@@ -106,7 +109,7 @@ export default function Publications() {
                 </p>
                 {pub.file && (
                   <a
-                    href={`http://127.0.0.1:8000/publications/view/${pub.id}/`}
+                    href={`${BACKEND_URL}/publications/view/${pub.id}/`} // ✅ updated link
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
