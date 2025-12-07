@@ -54,7 +54,7 @@ const Home = () => {
       {/* HERO SECTION */}
       <section
         style={{
-          background: `url(${heroImage}) center/cover no-repeat`,
+         background: `url(${heroImage}) center/cover no-repeat`,
           color: "#fff",
           textAlign: "center",
           padding: "6rem 2rem",

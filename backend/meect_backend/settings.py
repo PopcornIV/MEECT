@@ -16,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-default-key")
 DEBUG = False
-ALLOWED_HOSTS = ["*"]  # Replace with your backend domain after deployment
+ALLOWED_HOSTS = ["meectbackend.vercel.app"]  # Replace with your backend domain after deployment
 
 # Application definition
 INSTALLED_APPS = [

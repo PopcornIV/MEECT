@@ -7,23 +7,34 @@ export default function Gallery() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [imageLoaded, setImageLoaded] = useState({}); // Track loaded images
+  const [imageLoaded, setImageLoaded] = useState({});
 
-  // ✅ Use backend URL from environment variables
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     axios
-      .get(`${BACKEND_URL}/api/gallery/`) // ✅ updated endpoint
+      .get(`${BACKEND_URL}/api/gallery/`)
       .then((res) => {
-        setEvents(res.data);
+        console.log("📸 Gallery API response:", res.data);
+
+        // SAFETY: Make sure backend response is ALWAYS an array
+        if (Array.isArray(res.data)) {
+          setEvents(res.data);
+        } else if (res.data?.results && Array.isArray(res.data.results)) {
+          setEvents(res.data.results);
+        } else {
+          console.warn("⚠️ Gallery API returned non-array:", res.data);
+          setEvents([]); // Prevent crash
+        }
+
         setLoading(false);
       })
       .catch((err) => {
-        console.error("❌ Error loading gallery:", err);
+        console.error("❌ Gallery load error:", err);
+        setEvents([]); // Prevent crash
         setLoading(false);
       });
-  }, []);
+  }, [BACKEND_URL]);
 
   const openModal = (event) => {
     setSelectedEvent(event);
@@ -42,7 +53,8 @@ export default function Gallery() {
       prev === 0 ? selectedEvent.images.length - 1 : prev - 1
     );
 
-  if (loading) return <FullScreenLoader visible={true} message="Loading Gallery…" />;
+  if (loading)
+    return <FullScreenLoader visible={true} message="Loading Gallery…" />;
 
   return (
     <section style={{ padding: "2rem", background: "#fff", color: "#333" }}>
@@ -51,7 +63,7 @@ export default function Gallery() {
         A collection of our restoration and conservation moments.
       </p>
 
-      {/* 🖼 Event Grid */}
+      {/* Grid */}
       <div
         style={{
           display: "grid",
@@ -74,19 +86,26 @@ export default function Gallery() {
                 cursor: "pointer",
                 transition: "transform 0.2s ease",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.transform = "scale(1.02)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.transform = "scale(1)")
+              }
               onClick={() => openModal(event)}
             >
               {!imageLoaded[event.id] && <InlineLoader />}
+
               <img
                 src={
-                  event.images && event.images.length > 0
-                    ? `${BACKEND_URL}${event.images[0].image}` // ✅ prepend backend URL
+                  event.images?.length > 0
+                    ? `${BACKEND_URL}${event.images[0].image}`
                     : "https://placehold.co/600x400?text=No+Image"
                 }
                 alt={event.name}
-                onLoad={() => setImageLoaded((prev) => ({ ...prev, [event.id]: true }))}
+                onLoad={() =>
+                  setImageLoaded((prev) => ({ ...prev, [event.id]: true }))
+                }
                 style={{
                   width: "100%",
                   height: "200px",
@@ -94,6 +113,7 @@ export default function Gallery() {
                   display: imageLoaded[event.id] ? "block" : "none",
                 }}
               />
+
               <div
                 style={{
                   position: "absolute",
@@ -114,7 +134,7 @@ export default function Gallery() {
         )}
       </div>
 
-      {/* 🪟 Modal Viewer */}
+      {/* Modal */}
       {selectedEvent && (
         <div
           style={{
@@ -149,11 +169,15 @@ export default function Gallery() {
           </button>
 
           {!imageLoaded[`modal-${currentIndex}`] && <InlineLoader />}
+
           <img
-            src={`${BACKEND_URL}${selectedEvent.images[currentIndex].image}`} // ✅ prepend backend URL
+            src={`${BACKEND_URL}${selectedEvent.images[currentIndex].image}`}
             alt={selectedEvent.name}
             onLoad={() =>
-              setImageLoaded((prev) => ({ ...prev, [`modal-${currentIndex}`]: true }))
+              setImageLoaded((prev) => ({
+                ...prev,
+                [`modal-${currentIndex}`]: true,
+              }))
             }
             style={{
               maxHeight: "80vh",
