@@ -16,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-default-key")
 DEBUG = False
-ALLOWED_HOSTS = ["meectbackend.vercel.app"]  # Replace with your backend domain after deployment
+ALLOWED_HOSTS = ["your.vps.ip", "meect.co.ke", "api.meect.co.ke"] 
 
 # Application definition
 INSTALLED_APPS = [
@@ -120,10 +120,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # CORS / CSRF
 CORS_ALLOWED_ORIGINS = [
-    "https://meect-nu.vercel.app",
+    "https://meect.co.ke",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    "https://meect-nu.vercel.app",
+    "https://meect.co.ke",
 ]
 CORS_ALLOW_ALL_METHODS = True
 CORS_ALLOW_CREDENTIALS = True
@@ -140,9 +140,15 @@ REST_FRAMEWORK = {
 }
 
 # Email backend
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'noreply@yourdomain.com'
-ADMIN_EMAIL = 'admin@yourdomain.com'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'mail.meect.co.ke'          # cPanel mail server
+EMAIL_PORT = 465                          # SSL port, or 587 for TLS
+EMAIL_USE_SSL = True                      # True for 465, False for 587
+EMAIL_USE_TLS = False                     # True if using 587
+EMAIL_HOST_USER = 'meectcok@meect.co.ke' # your cPanel email
+EMAIL_HOST_PASSWORD = os.environ.get('CPANEL_EMAIL_PASSWORD')  # keep password in env
+DEFAULT_FROM_EMAIL = 'meectcok@meect.co.ke'
+
 
 # Site URL (frontend)
-SITE_URL = "https://meect-nu.vercel.app"
+SITE_URL = "https://meect.co.ke"
