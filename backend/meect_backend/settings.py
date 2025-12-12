@@ -112,11 +112,11 @@ USE_TZ = True
 
 # Static files
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_DIRS = BASE_DIR / "static"
 
 # Media files (Cloudinary will handle storage)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR, 'media'
 
 # CORS / CSRF
 CORS_ALLOWED_ORIGINS = [
