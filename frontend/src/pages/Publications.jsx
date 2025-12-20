@@ -8,7 +8,7 @@ export default function Publications() {
   const [showTop, setShowTop] = useState(false);
 
   // ✅ Get backend URL from environment variable
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  const BACKEND_URL = import.meta.env.VITE_API_BACKEND_URL || "";
 
   useEffect(() => {
     const fetchPublications = async () => {

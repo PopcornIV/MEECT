@@ -1,9 +1,7 @@
 import axios from "axios";
 
-// Base backend URL (from environment variable if set)
-export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:8000";
+export const BACKEND_URL = import.meta.env.VITE_API_BASE_URL;
 
-// Create a shared axios instance
 export const axiosInstance = axios.create({
   baseURL: BACKEND_URL,
   headers: {
@@ -11,7 +9,13 @@ export const axiosInstance = axios.create({
   },
 });
 
-// Example API functions using axiosInstance
-export const getProjects = () => axiosInstance.get("/api/projects/");
-export const getResources = (resourceType) => axiosInstance.get(`/api/${resourceType}/`);
-export const getGallery = () => axiosInstance.get("/api/gallery/");
+/* ---------- API CALLS ---------- */
+
+export const getProjects = () =>
+  axiosInstance.get("/api/projects/");
+
+export const getGallery = () =>
+  axiosInstance.get("/api/gallery/");
+
+export const getResources = (resourceType) =>
+  axiosInstance.get(`/api/${resourceType}/`);

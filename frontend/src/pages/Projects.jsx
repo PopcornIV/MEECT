@@ -11,14 +11,21 @@ export default function Projects() {
   const [showTop, setShowTop] = useState(false);
 
   // ✅ Get backend URL from environment variable
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  const BACKEND_URL = import.meta.env.VITE_API_BACKEND_URL || "";
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const res = await getProjects(); // ✅ use named function
         console.log("✅ API Response:", res.data);
-        setProjects(res.data);
+        const data = Array.isArray(res.data)
+        ? res.data
+        : Array.isArray(res.data?.results)
+        ? res.data.results
+        : [];
+
+        setProjects(data);
+
       } catch (err) {
         console.error("❌ Error loading projects:", err);
       } finally {

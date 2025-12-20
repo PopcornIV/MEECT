@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { BACKEND_URL } from "../api/client";
 import { FullScreenLoader, InlineLoader } from "../components/MEECTLoader";
 
 export default function Gallery() {
@@ -9,32 +10,42 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState({});
 
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  // ✅ Get backend URL from environment variable
+  const BACKEND_URL = import.meta.env.VITE_API_BACKEND_URL || "";
 
   useEffect(() => {
-    axios
-      .get(`${BACKEND_URL}/api/gallery/`)
-      .then((res) => {
+    let isMounted = true;
+
+    const fetchGallery = async () => {
+      try {
+        const res = await axios.get(`${BACKEND_URL}/api/gallery/`);
+
         console.log("📸 Gallery API response:", res.data);
 
-        // SAFETY: Make sure backend response is ALWAYS an array
-        if (Array.isArray(res.data)) {
-          setEvents(res.data);
-        } else if (res.data?.results && Array.isArray(res.data.results)) {
-          setEvents(res.data.results);
-        } else {
-          console.warn("⚠️ Gallery API returned non-array:", res.data);
-          setEvents([]); // Prevent crash
-        }
+        if (!isMounted) return;
 
-        setLoading(false);
-      })
-      .catch((err) => {
+        // Support DRF pagination OR plain list
+        const data = Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data?.results)
+          ? res.data.results
+          : [];
+
+        setEvents(data);
+      } catch (err) {
         console.error("❌ Gallery load error:", err);
-        setEvents([]); // Prevent crash
-        setLoading(false);
-      });
-  }, [BACKEND_URL]);
+        if (isMounted) setEvents([]);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchGallery();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const openModal = (event) => {
     setSelectedEvent(event);
@@ -53,8 +64,9 @@ export default function Gallery() {
       prev === 0 ? selectedEvent.images.length - 1 : prev - 1
     );
 
-  if (loading)
+  if (loading) {
     return <FullScreenLoader visible={true} message="Loading Gallery…" />;
+  }
 
   return (
     <section style={{ padding: "2rem", background: "#fff", color: "#333" }}>
@@ -104,7 +116,10 @@ export default function Gallery() {
                 }
                 alt={event.name}
                 onLoad={() =>
-                  setImageLoaded((prev) => ({ ...prev, [event.id]: true }))
+                  setImageLoaded((prev) => ({
+                    ...prev,
+                    [event.id]: true,
+                  }))
                 }
                 style={{
                   width: "100%",
@@ -139,10 +154,7 @@ export default function Gallery() {
         <div
           style={{
             position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
+            inset: 0,
             background: "rgba(0,0,0,0.8)",
             display: "flex",
             flexDirection: "column",
@@ -184,7 +196,9 @@ export default function Gallery() {
               maxWidth: "90%",
               borderRadius: "8px",
               objectFit: "contain",
-              display: imageLoaded[`modal-${currentIndex}`] ? "block" : "none",
+              display: imageLoaded[`modal-${currentIndex}`]
+                ? "block"
+                : "none",
             }}
           />
 
@@ -210,9 +224,11 @@ export default function Gallery() {
             >
               ← Prev
             </button>
+
             <span>
               {currentIndex + 1} / {selectedEvent.images.length}
             </span>
+
             <button
               onClick={nextImage}
               style={{

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { BACKEND_URL} from "../api/client"
 import { motion } from "framer-motion";
 import { Heart, Handshake, Leaf, ArrowUp } from "lucide-react";
 import { FullScreenLoader, ButtonLoader } from "../components/MEECTLoader";
@@ -42,21 +43,33 @@ export default function Contact() {
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSending(true);
-    setStatus("Sending...");
-    try {
-      await axios.post("http://127.0.0.1:8000/api/contact/", formData);
-      setStatus("✅ Message sent successfully!");
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    } catch (error) {
-      console.error(error);
-      setStatus("❌ Failed to send. Please try again.");
-    } finally {
-      setSending(false);
-    }
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setSending(true);
+  setStatus("Sending...");
+
+  try {
+    await axios.post(
+      `${BACKEND_URL}/api/contact/`,
+      formData,
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    setStatus("✅ Message sent successfully!");
+    setFormData({
+      name: "",
+      email: "",
+      subject: "",
+      message: "",
+    });
+  } catch (error) {
+    console.error("Contact form error:", error);
+    setStatus("❌ Failed to send. Please try again.");
+  } finally {
+    setSending(false);
+  }
+};
+
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
